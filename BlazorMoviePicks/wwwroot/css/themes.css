@@ -11,7 +11,6 @@
     --cf-theme-800: var(--cf-code-magic-800);
     --cf-theme-850: var(--cf-code-magic-850);
     --cf-theme-900: var(--cf-code-magic-900);
-
     /* #region code-magic */
     --cf-code-magic-core: #f2c864; /* yellow accent */
     --cf-code-magic-100: hsl(192, 77%, 79%); /* turqoise */
@@ -26,7 +25,6 @@
     --cf-code-magic-850: hsl(192, 77%, 15%);
     --cf-code-magic-900: hsl(192, 77%, 9%);
     /* #endregion code-magic */
-
     /* #region blue */
     --cf-blue-core: hsl(216, 98%, 52%);
     --cf-blue-100: hsl(216, 50%, 91%);
