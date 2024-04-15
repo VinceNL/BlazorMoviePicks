@@ -1,4 +1,7 @@
 ﻿@page "/"
+@using BlazorMoviePicks.Models
+@using BlazorMoviePicks.Services
+@inject TMDBClient TMDB
 
 <PageTitle>Home</PageTitle>
 
@@ -11,6 +14,24 @@
     <img src="/images/THEMOVEDBLogo.svg" alt="logo" class="w-25" />
     <button class="btn btn-primary mt-3">Primary Button</button>
 
+    @if(movies is not null)
+    {
+        <ul>
+            @foreach (PopularMovie movie in movies.Results)
+            {
+                <li>@movie.Title</li>
+            }
+        </ul>
+    }
+
 </div>
 
 
+@code {
+    private PopularMoviesPagedResponse? movies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movies = await TMDB.GetPopularMoviesAsync();
+    }
+}
