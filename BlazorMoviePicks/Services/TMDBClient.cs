@@ -18,9 +18,12 @@ namespace BlazorMoviePicks.Services
             _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", apiKey);
         }
 
-        public Task<PopularMoviesPagedResponse?> GetPopularMoviesAsync()
+        public Task<PopularMoviesPagedResponse?> GetPopularMoviesAsync(int page)
         {
-            return _httpClient.GetFromJsonAsync<PopularMoviesPagedResponse>("movie/popular");
+            if (page < 1) page = 1;
+            if (page > 500) page = 500;
+
+            return _httpClient.GetFromJsonAsync<PopularMoviesPagedResponse>($"movie/popular?page={page}");
         }
 
         public Task<MovieDetails?> GetMovieDetailsAsync(int id)

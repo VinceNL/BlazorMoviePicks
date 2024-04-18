@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject TMDBClient TMDB
+@inject NavigationManager Nav
 
 <PageTitle>Blazor Movie: Popular Movies</PageTitle>
 
@@ -36,13 +37,35 @@
         </div>
 
     </div>
+
+    @if (movies?.TotalPages > 1)
+    {
+        <div class="my-3">
+            <Paginator 
+                CurrentPage="movies.Page" 
+                TotalPages="movies.TotalPages > 500 ? 500 : movies.TotalPages"
+                OnPageChange="GetPage"/>
+        </div>
+    }
 </div>
 
 @code {
     private PopularMoviesPagedResponse? movies;
 
-    protected override async Task OnInitializedAsync()
+    [SupplyParameterFromQuery]
+    public int Page { get; set; } = 1;
+
+    protected override async Task OnParametersSetAsync()
     {
-        movies = await TMDB.GetPopularMoviesAsync();
+        if (Page < 1) Page = 1;
+        else if (Page > 500) Page = 500;
+
+        movies = await TMDB.GetPopularMoviesAsync(Page);
+    }
+
+    private void GetPage(int pageNumber)
+    {
+        string url = Nav.GetUriWithQueryParameter("page", pageNumber);
+        Nav.NavigateTo(url);
     }
 }
