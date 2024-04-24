@@ -2,7 +2,7 @@
 
 @if (Movie is not null)
 {
-    <div class="card h-100 fade-in" @ref="posterCardElement">
+    <div class="card h-100 fade-in @(IsSelected ? "card-selected" : "")" @ref="posterCardElement" @onclick="HandleClick">
         @if (string.IsNullOrEmpty(Movie.PosterPath))
         {
             <img class="card-img-top" alt="Movie Poster" src="/images/PosterPlaceHolder.png" />
@@ -18,7 +18,7 @@
             </p>
         </div>
         <div class="card-footer text-end">
-            <a href="/movie/@Movie.Id" class="btn btn-primary">Details</a>
+            <a href="/movie/@Movie.Id" class="btn btn-primary" @onclick:stopPropagation>Details</a>
         </div>
     </div>
 }
@@ -48,6 +48,12 @@ else
     [Parameter]
     public PopularMovie? Movie { get; set; }
 
+    [Parameter]
+    public EventCallback<PopularMovie> OnMovieCardClick { get; set; }
+
+    [Parameter]
+    public bool IsSelected { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -57,6 +63,14 @@ else
                 max = 15,
                 speed = 300
             });
+        }
+    }
+
+    private void HandleClick()
+    {
+        if (Movie is not null)
+        {
+            OnMovieCardClick.InvokeAsync(Movie);
         }
     }
 

@@ -21,7 +21,9 @@
                 @foreach (PopularMovie movie in movies.Results)
                 {
                     <div class="col">
-                        <MovieCard Movie="movie" />
+                        <MovieCard Movie="movie" 
+                                   OnMovieCardClick="ToggleMovieSelection"
+                                   IsSelected="@selectedMovies.Contains(movie)" />
                     </div>
                 }
             }
@@ -51,6 +53,7 @@
 
 @code {
     private PopularMoviesPagedResponse? movies;
+    private List<PopularMovie> selectedMovies = new List<PopularMovie>();
 
     [SupplyParameterFromQuery]
     public int Page { get; set; } = 1;
@@ -60,12 +63,25 @@
         if (Page < 1) Page = 1;
         else if (Page > 500) Page = 500;
 
-        movies = await TMDB.GetPopularMoviesAsync(Page);
+        movies = await TMDB.GetPopularMoviesAsync(Page)!;
     }
 
     private void GetPage(int pageNumber)
     {
         string url = Nav.GetUriWithQueryParameter("page", pageNumber);
         Nav.NavigateTo(url);
+    }
+
+    private void ToggleMovieSelection(PopularMovie movie)
+    {
+        var existingMovie = selectedMovies.FirstOrDefault(m => m.Id == movie.Id);
+        if (existingMovie is not null)
+        {
+            selectedMovies.Remove(existingMovie);
+        }
+        else
+        {
+            selectedMovies.Add(movie);
+        }
     }
 }

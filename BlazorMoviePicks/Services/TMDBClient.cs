@@ -18,17 +18,33 @@ namespace BlazorMoviePicks.Services
             _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", apiKey);
         }
 
-        public Task<PopularMoviesPagedResponse?> GetPopularMoviesAsync(int page)
+        public Task<PopularMoviesPagedResponse?>? GetPopularMoviesAsync(int page)
         {
-            if (page < 1) page = 1;
-            if (page > 500) page = 500;
+            try
+            {
+                if (page < 1) page = 1;
+                if (page > 500) page = 500;
 
-            return _httpClient.GetFromJsonAsync<PopularMoviesPagedResponse>($"movie/popular?page={page}");
+                return _httpClient.GetFromJsonAsync<PopularMoviesPagedResponse>($"movie/popular?page={page}");
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return null;
+            }
         }
 
-        public Task<MovieDetails?> GetMovieDetailsAsync(int id)
+        public Task<MovieDetails?>? GetMovieDetailsAsync(int id)
         {
-            return _httpClient.GetFromJsonAsync<MovieDetails>($"movie/{id}");
+            try
+            {
+                return _httpClient.GetFromJsonAsync<MovieDetails>($"movie/{id}");
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return null;
+            }
         }
     }
 }
