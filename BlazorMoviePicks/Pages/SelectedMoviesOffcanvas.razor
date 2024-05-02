@@ -1,0 +1,55 @@
+﻿@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+
+<a class="@OffcanvasClass" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSelectedMovies" aria-controls="offcanvasSelectedMovies">
+    <i class="bi bi-list"></i>
+    @if (SelectedMovies.Count > 0)
+    {
+        <span class="badge badge-pill bg-success ms-2">@SelectedMovies.Count</span>
+    }
+</a>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSelectedMovies" aria-labelledby="offcanvasSelectedMoviesLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasSelectedMoviesLabel">My watchlist</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        @if (SelectedMovies.Count > 0)
+        {
+            <ul class="list-group">
+                @foreach (var movie in SelectedMovies)
+                {
+                    <li @onclick="() => NavigateToMovieDetails(movie.Id)" class="list-group-item">@(movie.OriginalTitle != null ? movie.OriginalTitle : movie.Title)</li>
+                }
+            </ul>
+            <button class="btn btn-outline-danger mt-3" @onclick="ClearLists">Clear List</button>
+        }
+        else
+        {
+            <p>No movies selected.</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<MovieSummary> SelectedMovies { get; set; } = new List<MovieSummary>();
+
+    [Parameter]
+    public EventCallback OnClearLists { get; set; }
+
+    private string OffcanvasClass => SelectedMovies.Count > 0 ? "btn btn-outline-success" : "d-none";
+
+    private async Task ClearLists()
+    {
+        await OnClearLists.InvokeAsync();
+    }
+
+    private async Task NavigateToMovieDetails(int movieId)
+    {
+        await JS.InvokeVoidAsync("closeOffcanvas");
+        NavManager.NavigateTo($"/movie/{movieId}");
+    }
+}
