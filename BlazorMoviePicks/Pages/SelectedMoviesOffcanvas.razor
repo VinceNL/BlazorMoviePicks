@@ -18,12 +18,21 @@
     <div class="offcanvas-body">
         @if (SelectedMovies.Count > 0)
         {
-            <ul class="list-group">
-                @foreach (var movie in SelectedMovies)
-                {
-                    <li @onclick="() => NavigateToMovieDetails(movie.Id)" class="list-group-item">@(movie.OriginalTitle != null ? movie.OriginalTitle : movie.Title)</li>
-                }
-            </ul>
+            <SortableList Id="dragHandles" Handle=".drag-handle" Items="SelectedMovies" OnUpdate="@SortList" OnSpill="@RemoveFromList" Context="MovieSummary">
+                <SortableItemTemplate>
+                    <div class="sortable-item">
+                        <div class="drag-handle">
+                            <i class="fas fa-grip-vertical"></i>
+                        </div>
+                        <div class="card">
+                            <p @onclick="() => NavigateToMovieDetails(MovieSummary.Id)" class="is-size-4 p-2 ml-4">
+                                @(MovieSummary.OriginalTitle != null ? MovieSummary.OriginalTitle : MovieSummary.Title)
+                            </p>
+                        </div>
+                    </div>
+                </SortableItemTemplate>
+            </SortableList>
+
             <button class="btn btn-outline-danger mt-3" @onclick="ClearLists">Clear List</button>
         }
         else
@@ -40,7 +49,41 @@
     [Parameter]
     public EventCallback OnClearLists { get; set; }
 
+    [Parameter]
+    public EventCallback OnRemoveFromList { get; set; }
+
     private string OffcanvasClass => SelectedMovies.Count > 0 ? "btn btn-outline-success" : "d-none";
+
+    private void SortList((int oldIndex, int newIndex) indices)
+    {
+        var (oldIndex, newIndex) = indices;
+
+        var items = this.SelectedMovies;
+        var itemToMove = items[oldIndex];
+        items.RemoveAt(oldIndex);
+
+        if (newIndex < items.Count)
+        {
+            items.Insert(newIndex, itemToMove);
+        }
+        else
+        {
+            items.Add(itemToMove);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task RemoveFromList((int oldIndex, int newIndex) indeces)
+    {
+        var (oldIndex, newIndex) = indeces;
+        if (oldIndex >= 0 && oldIndex < SelectedMovies.Count)
+        {
+            SelectedMovies.RemoveAt(oldIndex);
+
+        }
+        await OnRemoveFromList.InvokeAsync(oldIndex);
+    }
 
     private async Task ClearLists()
     {
