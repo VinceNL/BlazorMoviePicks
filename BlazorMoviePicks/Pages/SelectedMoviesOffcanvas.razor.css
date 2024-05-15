@@ -10,12 +10,16 @@
     justify-content: center;
     margin-top: 3em;
     margin-left: 0.5em;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .clapper > div {
     background: repeating-linear-gradient(135deg, #1e7e34 0%, #1e7e34 10%, #fff 10%, #fff 20%);
     height: 10px;
     width: 110px;
+    border: 1px solid #1e7e34;
+    border-radius: 3px 3px 0 0;
     position: absolute;
     left: -5px;
     top: 0;
@@ -26,6 +30,8 @@
 .clapper > div:nth-of-type(1) {
     background: repeating-linear-gradient(-135deg, #fff 0%, #fff 10%, #1e7e34 10%, #1e7e34 20%);
     top: -10px;
+    border: 1px solid #1e7e34;
+    border-radius: 3px 3px 0 0;
 }
 
 .clapper:hover > div:nth-of-type(1) {
