@@ -61,8 +61,8 @@
     font-size: 15px;
     background-color: #1e7e34;
     color: white;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
+    padding: 0.3rem;
+    margin-bottom: 0.3rem;
     display: flex; /* Ensure the card content is aligned */
     align-items: center;
     flex-grow: 1; /* Make card take remaining space */
