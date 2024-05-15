@@ -2,13 +2,18 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
 
-<a class="@OffcanvasClass" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSelectedMovies" aria-controls="offcanvasSelectedMovies">
-    <i class="bi bi-list"></i>
+<div class="@OffcanvasClass" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSelectedMovies" aria-controls="offcanvasSelectedMovies">
+        <div></div>
+        <div></div>
     @if (SelectedMovies.Count > 0)
     {
-        <span class="badge badge-pill bg-success ms-2">@SelectedMovies.Count</span>
+        <span class="badge badge-pill ms-2">
+            Take
+            <hr />
+            @SelectedMovies.Count
+        </span>
     }
-</a>
+</div>
 
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSelectedMovies" aria-labelledby="offcanvasSelectedMoviesLabel">
     <div class="offcanvas-header">
@@ -52,7 +57,7 @@
     [Parameter]
     public EventCallback OnRemoveFromList { get; set; }
 
-    private string OffcanvasClass => SelectedMovies.Count > 0 ? "btn btn-outline-success" : "d-none";
+    private string OffcanvasClass => SelectedMovies.Count > 0 ? "clapper" : "d-none";
 
     private void SortList((int oldIndex, int newIndex) indices)
     {
