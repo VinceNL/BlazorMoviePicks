@@ -1,6 +1,10 @@
-﻿/* Clapperboard Styling */
+﻿.clapper-container {
+    position: relative;
+}
+
+/* Clapperboard Styling */
 .clapper {
-    background-color: #1e7e34;
+    background-color: #6e9641;
     height: 80px;
     width: 100px;
     position: relative;
@@ -8,17 +12,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 3em;
+    position: absolute;
+    margin-top: 5em;
     margin-left: 0.5em;
     border-radius: 0 0 10px 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .clapper > div {
-    background: repeating-linear-gradient(135deg, #1e7e34 0%, #1e7e34 10%, #fff 10%, #fff 20%);
+    background: repeating-linear-gradient(135deg, #6e9641 0%, #6e9641 10%, #fff 10%, #fff 20%);
     height: 10px;
     width: 110px;
-    border: 1px solid #1e7e34;
+    border: 1px solid #6e9641;
     border-radius: 3px 3px 0 0;
     position: absolute;
     left: -5px;
@@ -28,9 +33,9 @@
 }
 
 .clapper > div:nth-of-type(1) {
-    background: repeating-linear-gradient(-135deg, #fff 0%, #fff 10%, #1e7e34 10%, #1e7e34 20%);
+    background: repeating-linear-gradient(-135deg, #fff 0%, #fff 10%, #6e9641 10%, #6e9641 20%);
     top: -10px;
-    border: 1px solid #1e7e34;
+    border: 1px solid #6e9641;
     border-radius: 3px 3px 0 0;
 }
 
@@ -59,7 +64,7 @@
     text-transform: uppercase;
     margin-bottom: 0.5rem;
     font-size: 15px;
-    background-color: #1e7e34;
+    background-color: #6e9641;
     color: white;
     padding: 0.3rem;
     margin-bottom: 0.3rem;
@@ -69,7 +74,7 @@
 }
 
 .card:hover {
-    background-color: #0c571d;
+    background-color: #417505;
 }
 
 /* Flex layout adjustments */

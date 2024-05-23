@@ -2,17 +2,19 @@
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
 
-<div class="@OffcanvasClass" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSelectedMovies" aria-controls="offcanvasSelectedMovies">
-        <div></div>
-        <div></div>
-    @if (SelectedMovies.Count > 0)
-    {
-        <span class="badge badge-pill ms-2">
-            Take
-            <hr />
-            @SelectedMovies.Count
-        </span>
-    }
+<div class="clapper-container">
+    <div class="@OffcanvasClass" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSelectedMovies" aria-controls="offcanvasSelectedMovies">
+            <div></div>
+            <div></div>
+        @if (SelectedMovies.Count > 0)
+        {
+            <span class="badge badge-pill ms-2">
+                Take
+                <hr />
+                @SelectedMovies.Count
+            </span>
+        }
+    </div>
 </div>
 
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSelectedMovies" aria-labelledby="offcanvasSelectedMoviesLabel">

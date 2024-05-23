@@ -43,3 +43,11 @@ export function init(id, group, pull, put, sort, handle, filter, component, forc
         },
     });
 }
+
+export function initializeVanillaTilt() {
+    const elements = document.querySelectorAll('.tilt-card');
+    VanillaTilt.init(elements, {
+        max: 15,
+        speed: 300
+    });
+}

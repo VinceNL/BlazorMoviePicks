@@ -10,7 +10,9 @@
     {
         @if (SortableItemTemplate is not null)
         {
-            @SortableItemTemplate(item)
+            <div class="tilt-card">
+                @SortableItemTemplate(item)
+            </div>
         }
     }
 </div>
@@ -60,11 +62,18 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        var module = await JS.InvokeAsync<IJSObjectReference>("import", "./UI/SortableList.razor.js");
+
+        if (module != null)
         {
-            selfReference = DotNetObjectReference.Create(this);
-            var module = await JS.InvokeAsync<IJSObjectReference>("import", "./UI/SortableList.razor.js");
-            await module.InvokeAsync<string>("init", Id, Group, Pull, Put, Sort, Handle, Filter, selfReference, ForceFallback);
+            if (firstRender)
+            {
+                selfReference = DotNetObjectReference.Create(this);
+                await module.InvokeAsync<string>("init", Id, Group, Pull, Put, Sort, Handle, Filter, selfReference, ForceFallback);
+
+            }
+            // Initialize VanillaTilt on all elements with class "tilt-card"
+            await module.InvokeAsync<string>("initializeVanillaTilt");
         }
     }
 
