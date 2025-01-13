@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace BlazorMoviePicks.Services
 {
-    public class TmdbClient
+    public class TmdbClient : ITmdbClient
     {
         private readonly HttpClient _httpClient;
 

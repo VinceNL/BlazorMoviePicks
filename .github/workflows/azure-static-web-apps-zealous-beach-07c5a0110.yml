@@ -19,10 +19,25 @@ jobs:
         with:
           submodules: true
           lfs: false
-          
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
       - name: Inject TMDB Key into appsettings.json
         run: |
           sed -i 's/"TMDBKey": "YOUR_API_KEY"/"TMDBKey": "${{ secrets.TMDB_KEY }}"/g' BlazorMoviePicks/wwwroot/appsettings.json
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run Tests
+        run: dotnet test --no-restore --verbosity normal
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
