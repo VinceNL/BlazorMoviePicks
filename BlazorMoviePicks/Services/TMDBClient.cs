@@ -3,29 +3,30 @@ using System.Net.Http.Json;
 
 namespace BlazorMoviePicks.Services
 {
-    public class TMDBClient
+    public class TmdbClient
     {
         private readonly HttpClient _httpClient;
 
-        public TMDBClient(HttpClient httpClient, IConfiguration config)
+        public TmdbClient(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
 
-            _httpClient.BaseAddress = new Uri("https://api.themoviedb.org/3/");
+            string baseUrl = config["BaseUrl"] ?? throw new KeyNotFoundException("BaseUrl not found");
+            _httpClient.BaseAddress = new Uri(baseUrl);
             _httpClient.DefaultRequestHeaders.Accept.Add(new("application/json"));
 
-            string apiKey = config["TMDBKey"] ?? throw new Exception("TMDBKey not found");
+            string apiKey = config["TMDBKey"] ?? throw new KeyNotFoundException("TMDBKey not found");
             _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", apiKey);
         }
 
-        public Task<PopularMoviesPagedResponse?>? GetPopularMoviesAsync(int page)
+        public async Task<PopularMoviesPagedResponse?> GetPopularMoviesAsync(int page)
         {
             try
             {
                 if (page < 1) page = 1;
                 if (page > 500) page = 500;
 
-                return _httpClient.GetFromJsonAsync<PopularMoviesPagedResponse>($"movie/popular?page={page}");
+                return await _httpClient.GetFromJsonAsync<PopularMoviesPagedResponse>($"movie/popular?page={page}");
             }
             catch (HttpRequestException ex)
             {
@@ -34,11 +35,11 @@ namespace BlazorMoviePicks.Services
             }
         }
 
-        public Task<MovieDetails?>? GetMovieDetailsAsync(int id)
+        public async Task<MovieDetails?> GetMovieDetailsAsync(int id)
         {
             try
             {
-                return _httpClient.GetFromJsonAsync<MovieDetails>($"movie/{id}");
+                return await _httpClient.GetFromJsonAsync<MovieDetails>($"movie/{id}");
             }
             catch (HttpRequestException ex)
             {

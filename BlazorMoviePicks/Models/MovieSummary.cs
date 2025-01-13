@@ -1,10 +1,13 @@
-﻿public class MovieSummary
+﻿namespace BlazorMoviePicks.Models
 {
-    public int Id { get; set; }
+    public class MovieSummary
+    {
+        public int Id { get; set; }
 
-    public string Title { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
 
-    public float VoteAverage { get; set; }
+        public float VoteAverage { get; set; }
 
-    public string? OriginalTitle { get; set; }
+        public string? OriginalTitle { get; set; }
+    }
 }

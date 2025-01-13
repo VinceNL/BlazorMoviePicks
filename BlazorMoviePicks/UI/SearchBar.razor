@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@inject NavigationManager Nav
+
+<div class="input-group">
+    <input type="text" class="form-control" placeholder="Search movies..." @bind="searchQuery" @oninput="OnInput" />
+    <button class="btn btn-outline-secondary" @onclick="PerformSearch">Search</button>
+</div>
+
+@code {
+    private string? searchQuery;
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? string.Empty;
+    }
+
+    private void PerformSearch()
+    {
+        Nav.NavigateTo($"/search?query={searchQuery}");
+    }
+}
