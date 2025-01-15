@@ -2,13 +2,13 @@
 
 namespace BlazorMoviePicks.Models
 {
-    public class PopularMoviesPagedResponse
+    public class MoviesPagedResponse
     {
         [JsonPropertyName("page")]
         public int Page { get; set; }
 
         [JsonPropertyName("results")]
-        public IEnumerable<PopularMovie> Results { get; set; } = [];
+        public IEnumerable<MovieResponse> Results { get; set; } = [];
 
         [JsonPropertyName("total_pages")]
         public int TotalPages { get; set; }

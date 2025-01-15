@@ -34,13 +34,13 @@ namespace BlazorMovieTests
         public async Task GetPopularMoviesAsync_ReturnsPopularMovies()
         {
             // Arrange
-            var responseContent = new PopularMoviesPagedResponse
+            var responseContent = new MoviesPagedResponse
             {
                 Page = 1,
-                Results = new List<PopularMovie>
+                Results = new List<MovieResponse>
             {
-                new PopularMovie { Id = 1, Title = "Movie 1" },
-                new PopularMovie { Id = 2, Title = "Movie 2" }
+                new MovieResponse { Id = 1, Title = "Movie 1" },
+                new MovieResponse { Id = 2, Title = "Movie 2" }
             },
                 TotalPages = 1,
                 TotalResults = 2
@@ -71,13 +71,13 @@ namespace BlazorMovieTests
         public async Task GetTopRatedMoviesAsync_ReturnsPopularMovies()
         {
             // Arrange
-            var responseContent = new PopularMoviesPagedResponse
+            var responseContent = new MoviesPagedResponse
             {
                 Page = 1,
-                Results = new List<PopularMovie>
+                Results = new List<MovieResponse>
             {
-                new PopularMovie { Id = 1, Title = "Movie 1" },
-                new PopularMovie { Id = 2, Title = "Movie 2" }
+                new MovieResponse { Id = 1, Title = "Movie 1" },
+                new MovieResponse { Id = 2, Title = "Movie 2" }
             },
                 TotalPages = 1,
                 TotalResults = 2

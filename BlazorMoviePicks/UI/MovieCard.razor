@@ -46,10 +46,10 @@ else
     private ElementReference posterCardElement;
 
     [Parameter]
-    public PopularMovie? Movie { get; set; }
+    public MovieResponse? Movie { get; set; }
 
     [Parameter]
-    public EventCallback<PopularMovie> OnMovieCardClick { get; set; }
+    public EventCallback<MovieResponse> OnMovieCardClick { get; set; }
 
     [Parameter]
     public bool IsSelected { get; set; }

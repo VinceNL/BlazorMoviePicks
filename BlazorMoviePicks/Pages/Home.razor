@@ -26,7 +26,7 @@
         <div class="row row-cols-2 row-cols-lg-4 row-cols-xl-5 g-3 justify-content-center justify-content-md-start">
             @if (movies is not null)
             {
-                @foreach (PopularMovie movie in movies.Results)
+                @foreach (MovieResponse movie in movies.Results)
                 {
                     <div class="col">
                         <MovieCard Movie="movie"
@@ -60,7 +60,7 @@
 </div>
 
 @code {
-    private PopularMoviesPagedResponse? movies;
+    private MoviesPagedResponse? movies;
     private List<MovieSummary> selectedMovies = new List<MovieSummary>();
     private Timer? _debounceTimer;
     private MovieType currentMovieType = MovieType.Popular;
@@ -81,7 +81,7 @@
         Nav.NavigateTo(url);
     }
 
-    private void ToggleMovieSelection(PopularMovie movie)
+    private void ToggleMovieSelection(MovieResponse movie)
     {
         var summary = new MovieSummary
             {

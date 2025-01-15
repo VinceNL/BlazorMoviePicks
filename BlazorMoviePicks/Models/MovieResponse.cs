@@ -2,7 +2,7 @@
 
 namespace BlazorMoviePicks.Models
 {
-    public class PopularMovie
+    public class MovieResponse
     {
         [JsonPropertyName("adult")]
         public bool Adult { get; set; }

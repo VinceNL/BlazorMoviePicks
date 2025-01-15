@@ -19,14 +19,14 @@ namespace BlazorMoviePicks.Services
             _httpClient.DefaultRequestHeaders.Authorization = new("Bearer", apiKey);
         }
 
-        public async Task<PopularMoviesPagedResponse?> GetPopularMoviesAsync(int page)
+        public async Task<MoviesPagedResponse?> GetPopularMoviesAsync(int page)
         {
             try
             {
                 if (page < 1) page = 1;
                 if (page > 500) page = 500;
 
-                return await _httpClient.GetFromJsonAsync<PopularMoviesPagedResponse>($"movie/popular?page={page}");
+                return await _httpClient.GetFromJsonAsync<MoviesPagedResponse>($"movie/popular?page={page}");
             }
             catch (HttpRequestException ex)
             {
@@ -35,14 +35,14 @@ namespace BlazorMoviePicks.Services
             }
         }
 
-        public async Task<PopularMoviesPagedResponse?> GetTopRatedMoviesAsync(int page)
+        public async Task<MoviesPagedResponse?> GetTopRatedMoviesAsync(int page)
         {
             try
             {
                 if (page < 1) page = 1;
                 if (page > 500) page = 500;
 
-                return await _httpClient.GetFromJsonAsync<PopularMoviesPagedResponse>($"movie/top_rated?page={page}");
+                return await _httpClient.GetFromJsonAsync<MoviesPagedResponse>($"movie/top_rated?page={page}");
             }
             catch (HttpRequestException ex)
             {
@@ -50,7 +50,6 @@ namespace BlazorMoviePicks.Services
                 return null;
             }
         }
-
 
         public async Task<MovieDetails?> GetMovieDetailsAsync(int id)
         {
