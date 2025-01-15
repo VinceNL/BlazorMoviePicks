@@ -35,6 +35,23 @@ namespace BlazorMoviePicks.Services
             }
         }
 
+        public async Task<PopularMoviesPagedResponse?> GetTopRatedMoviesAsync(int page)
+        {
+            try
+            {
+                if (page < 1) page = 1;
+                if (page > 500) page = 500;
+
+                return await _httpClient.GetFromJsonAsync<PopularMoviesPagedResponse>($"movie/top_rated?page={page}");
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return null;
+            }
+        }
+
+
         public async Task<MovieDetails?> GetMovieDetailsAsync(int id)
         {
             try

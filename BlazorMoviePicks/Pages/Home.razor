@@ -5,17 +5,21 @@
 @inject NavigationManager Nav
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-<PageTitle>Blazor Movie: Popular Movies</PageTitle>
+<PageTitle>Blazor Movie: Movies</PageTitle>
 
 <SelectedMoviesOffcanvas SelectedMovies="@selectedMovies" OnClearLists="ClearSelectedMovieLists" OnRemoveFromList="DebouncedSave" />
 <div class="container-xxl py-3">
     <div>
         <h1 class="display-6">
-            <span class="text-danger">
-                <i class="bi bi-fire"></i>
+            <span class="text">
+                <i class="bi bi-film"></i>
             </span>
-            Popular Movies
+            Movies
         </h1>
+        <div class="btn-group" role="group">
+            <button type="button" class="@($"btn btn-outline-secondary {GetButtonClass(MovieType.Popular)}")" @onclick="() => SetMovieType(MovieType.Popular)">Popular</button>
+            <button type="button" class="@($"btn btn-outline-secondary {GetButtonClass(MovieType.TopRated)}")" @onclick="() => SetMovieType(MovieType.TopRated)">Top Rated</button>
+        </div>
     </div>
     <div class="d-flex flex-column flex-md-row justify-content-between my-3">
 
@@ -25,7 +29,7 @@
                 @foreach (PopularMovie movie in movies.Results)
                 {
                     <div class="col">
-                        <MovieCard Movie="movie" 
+                        <MovieCard Movie="movie"
                                    OnMovieCardClick="ToggleMovieSelection"
                                    IsSelected="@selectedMovies.Any(m => m.Id == movie.Id)" />
                     </div>
@@ -48,9 +52,9 @@
     {
         <div class="my-3">
             <Paginator 
-                CurrentPage="movies.Page" 
-                TotalPages="movies.TotalPages > 500 ? 500 : movies.TotalPages"
-                OnPageChange="GetPage"/>
+                CurrentPage="movies.Page"
+                       TotalPages="movies.TotalPages > 500 ? 500 : movies.TotalPages"
+                       OnPageChange="GetPage"/>
         </div>
     }
 </div>
@@ -59,6 +63,7 @@
     private PopularMoviesPagedResponse? movies;
     private List<MovieSummary> selectedMovies = new List<MovieSummary>();
     private Timer? _debounceTimer;
+    private MovieType currentMovieType = MovieType.Popular;
 
     [SupplyParameterFromQuery]
     public int Page { get; set; } = 1;
@@ -66,6 +71,7 @@
     protected override async Task OnParametersSetAsync()
     {
         await LoadSelectionAsync();
+        await LoadMovieTypeAsync();
         await LoadMoviesAsync();
     }
 
@@ -115,7 +121,6 @@
             Console.WriteLine($"Error loading selections from local storage: {ex.Message}");
             selectedMovies.Clear();
         }
-
     }
 
     private async Task LoadMoviesAsync()
@@ -125,7 +130,14 @@
 
         try
         {
-            movies = await TMDB.GetPopularMoviesAsync(Page)!;
+            if (currentMovieType == MovieType.Popular)
+            {
+                movies = await TMDB.GetPopularMoviesAsync(Page)!;
+            }
+            else
+            {
+                movies = await TMDB.GetTopRatedMoviesAsync(Page)!;
+            }
         }
         catch (Exception ex)
         {
@@ -166,5 +178,38 @@
     {
         selectedMovies.Clear();
         await localStorage.RemoveItemAsync("selectedMovieSummaries");
+    }
+
+    private async Task SetMovieType(MovieType type)
+    {
+        currentMovieType = type;
+        Page = 1;
+        await SaveMovieTypeAsync();
+        await LoadMoviesAsync();
+    }
+
+    private async Task SaveMovieTypeAsync()
+    {
+        await localStorage.SetItemAsync("currentMovieType", currentMovieType.ToString());
+    }
+
+    private async Task LoadMovieTypeAsync()
+    {
+        var movieTypeString = await localStorage.GetItemAsync<string>("currentMovieType");
+        if (!string.IsNullOrEmpty(movieTypeString) && Enum.TryParse<MovieType>(movieTypeString, out var movieType))
+        {
+            currentMovieType = movieType;
+        }
+    }
+
+    private string GetButtonClass(MovieType type)
+    {
+        return currentMovieType == type ? "btn btn-secondary" : "btn btn-outline-secondary";
+    }
+
+    private enum MovieType
+    {
+        Popular,
+        TopRated
     }
 }
