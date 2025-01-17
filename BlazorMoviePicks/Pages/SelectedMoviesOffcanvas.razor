@@ -1,4 +1,4 @@
-﻿@inject Blazored.LocalStorage.ILocalStorageService localStorage
+﻿@inject IMovieStateService MovieState
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
 
@@ -57,11 +57,11 @@
     public EventCallback OnClearLists { get; set; }
 
     [Parameter]
-    public EventCallback OnRemoveFromList { get; set; }
+    public EventCallback<int> OnRemoveFromList { get; set; }
 
     private string OffcanvasClass => SelectedMovies.Count > 0 ? "clapper" : "d-none";
 
-    private void SortList((int oldIndex, int newIndex) indices)
+    private async Task SortList((int oldIndex, int newIndex) indices)
     {
         var (oldIndex, newIndex) = indices;
 
@@ -78,17 +78,12 @@
             items.Add(itemToMove);
         }
 
-        StateHasChanged();
+        await MovieState.SortSelectedMoviesAsync(items);
     }
 
     private async Task RemoveFromList((int oldIndex, int newIndex) indeces)
     {
         var (oldIndex, newIndex) = indeces;
-        if (oldIndex >= 0 && oldIndex < SelectedMovies.Count)
-        {
-            SelectedMovies.RemoveAt(oldIndex);
-
-        }
         await OnRemoveFromList.InvokeAsync(oldIndex);
     }
 

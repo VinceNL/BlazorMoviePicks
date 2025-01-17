@@ -1,13 +1,13 @@
 ﻿@page "/"
-@using System.Text.Json
+@using BlazorMoviePicks.Enums
 @implements IDisposable
 @inject ITmdbClient TMDB
 @inject NavigationManager Nav
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IMovieStateService MovieState
 
 <PageTitle>Blazor Movie: Movies</PageTitle>
 
-<SelectedMoviesOffcanvas SelectedMovies="@selectedMovies" OnClearLists="ClearSelectedMovieLists" OnRemoveFromList="DebouncedSave" />
+<SelectedMoviesOffcanvas SelectedMovies="@MovieState.SelectedMovies" OnClearLists="ClearSelectedMovieLists" OnRemoveFromList="RemoveMovieFromList" />
 <div class="container-xxl py-3">
     <div>
         <h1 class="display-6">
@@ -16,7 +16,7 @@
             </span>
             Movies
         </h1>
-        <MovieTypeSelector CurrentMovieType="currentMovieType" OnMovieTypeChanged="SetMovieType" />
+        <MovieTypeSelector CurrentMovieType="MovieState.CurrentMovieType" OnMovieTypeChanged="SetMovieType" />
     </div>
     <div class="d-flex flex-column flex-md-row justify-content-between my-3">
 
@@ -28,7 +28,7 @@
                     <div class="col">
                         <MovieCard Movie="movie"
                                    OnMovieCardClick="ToggleMovieSelection"
-                                   IsSelected="@selectedMovies.Any(m => m.Id == movie.Id)" />
+                                   IsSelected="@MovieState.SelectedMovies.Any(m => m.Id == movie.Id)" />
                     </div>
                 }
             }
@@ -48,27 +48,28 @@
     @if (movies?.TotalPages > 1)
     {
         <div class="my-3">
-            <Paginator 
-                CurrentPage="movies.Page"
+            <Paginator CurrentPage="movies.Page"
                        TotalPages="movies.TotalPages > 500 ? 500 : movies.TotalPages"
-                       OnPageChange="GetPage"/>
+                       OnPageChange="GetPage" />
         </div>
     }
 </div>
 
 @code {
     private MoviesPagedResponse? movies;
-    private List<MovieSummary> selectedMovies = new List<MovieSummary>();
-    private Timer? _debounceTimer;
-    private MovieTypeSelector.MovieType currentMovieType = MovieTypeSelector.MovieType.Popular;
 
     [SupplyParameterFromQuery]
     public int Page { get; set; } = 1;
 
+    protected override async Task OnInitializedAsync()
+    {
+        MovieState.OnChange += StateHasChanged;
+        await MovieState.LoadStateAsync();
+        await LoadMoviesAsync();
+    }
+
     protected override async Task OnParametersSetAsync()
     {
-        await LoadSelectionAsync();
-        await LoadMovieTypeAsync();
         await LoadMoviesAsync();
     }
 
@@ -78,7 +79,12 @@
         Nav.NavigateTo(url);
     }
 
-    private void ToggleMovieSelection(MovieResponse movie)
+    public void Dispose()
+    {
+        MovieState.OnChange -= StateHasChanged;
+    }
+
+    private async Task ToggleMovieSelection(MovieResponse movie)
     {
         var summary = new MovieSummary
             {
@@ -88,36 +94,7 @@
                 VoteAverage = movie.VoteAverage
             };
 
-        var existing = selectedMovies.FirstOrDefault(sm => sm.Id == movie.Id);
-        if (existing != null)
-        {
-            selectedMovies.Remove(existing);
-        }
-        else
-        {
-            selectedMovies.Add(summary);
-        }
-
-        // Save the updated IDs to local storage
-        DebouncedSave();
-    }
-
-    private async Task LoadSelectionAsync()
-    {
-        try
-        {
-            var json = await localStorage.GetItemAsync<string>("selectedMovieSummaries");
-            if (!string.IsNullOrEmpty(json))
-            {
-                selectedMovies = JsonSerializer.Deserialize<List<MovieSummary>>(json)!;
-            }
-        }
-        catch (Exception ex)
-        {
-
-            Console.WriteLine($"Error loading selections from local storage: {ex.Message}");
-            selectedMovies.Clear();
-        }
+        await MovieState.AddOrRemoveMovieAsync(summary);
     }
 
     private async Task LoadMoviesAsync()
@@ -127,7 +104,7 @@
 
         try
         {
-            if (currentMovieType == MovieTypeSelector.MovieType.Popular)
+            if (MovieState.CurrentMovieType == MovieType.Popular)
             {
                 movies = await TMDB.GetPopularMoviesAsync(Page)!;
             }
@@ -138,64 +115,29 @@
         }
         catch (Exception ex)
         {
-
             Console.WriteLine($"Error fetching movies: {ex.Message}");
             movies = null;
         }
     }
 
-    private async Task SaveSelectionAsync()
+    private async Task ClearSelectedMovieLists()
     {
-        try
-        {
-            var json = JsonSerializer.Serialize(selectedMovies);
-            await localStorage.SetItemAsync("selectedMovieSummaries", json);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error saving selection to local storage: {ex.Message}");
-        }
+        await MovieState.ClearSelectedMoviesAsync();
     }
 
-    private void DebouncedSave()
+    private async Task SetMovieType(MovieType type)
     {
-        _debounceTimer?.Dispose(); // Stop the previous timer
-        _debounceTimer = new Timer(async _ =>
-        {
-            await SaveSelectionAsync();
-        }, null, 500, Timeout.Infinite); // Delay save operation by 500 ms
-    }
-
-    public void Dispose()
-    {
-        _debounceTimer?.Dispose();
-    }
-
-    private async void ClearSelectedMovieLists()
-    {
-        selectedMovies.Clear();
-        await localStorage.RemoveItemAsync("selectedMovieSummaries");
-    }
-
-    private async Task SetMovieType(MovieTypeSelector.MovieType type)
-    {
-        currentMovieType = type;
+        await MovieState.SetMovieTypeAsync(type);
         Page = 1;
-        await SaveMovieTypeAsync();
         await LoadMoviesAsync();
     }
 
-    private async Task SaveMovieTypeAsync()
+    private async Task RemoveMovieFromList(int index)
     {
-        await localStorage.SetItemAsync("currentMovieType", currentMovieType.ToString());
-    }
-
-    private async Task LoadMovieTypeAsync()
-    {
-        var movieTypeString = await localStorage.GetItemAsync<string>("currentMovieType");
-        if (!string.IsNullOrEmpty(movieTypeString) && Enum.TryParse<MovieTypeSelector.MovieType>(movieTypeString, out var movieType))
+        if (index >= 0 && index < MovieState.SelectedMovies.Count)
         {
-            currentMovieType = movieType;
+            var movie = MovieState.SelectedMovies[index];
+            await MovieState.AddOrRemoveMovieAsync(movie);
         }
     }
 }

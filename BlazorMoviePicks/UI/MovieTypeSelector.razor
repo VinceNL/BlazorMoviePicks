@@ -1,4 +1,6 @@
-﻿<div class="btn-group" role="group">
+﻿@using BlazorMoviePicks.Enums
+
+<div class="btn-group" role="group">
     <button type="button" class="@($"btn btn-outline-secondary {GetButtonClass(MovieType.Popular)}")" @onclick="() => SetMovieType(MovieType.Popular)">Popular</button>
     <button type="button" class="@($"btn btn-outline-secondary {GetButtonClass(MovieType.TopRated)}")" @onclick="() => SetMovieType(MovieType.TopRated)">Top Rated</button>
 </div>
@@ -22,13 +24,5 @@
     private string GetButtonClass(MovieType type)
     {
         return CurrentMovieType == type ? "btn btn-secondary" : "btn btn-outline-secondary";
-    }
-}
-
-@code {
-    public enum MovieType
-    {
-        Popular,
-        TopRated
     }
 }
