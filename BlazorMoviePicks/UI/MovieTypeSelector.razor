@@ -1,0 +1,34 @@
+﻿<div class="btn-group" role="group">
+    <button type="button" class="@($"btn btn-outline-secondary {GetButtonClass(MovieType.Popular)}")" @onclick="() => SetMovieType(MovieType.Popular)">Popular</button>
+    <button type="button" class="@($"btn btn-outline-secondary {GetButtonClass(MovieType.TopRated)}")" @onclick="() => SetMovieType(MovieType.TopRated)">Top Rated</button>
+</div>
+
+@code {
+    [Parameter]
+    public MovieType CurrentMovieType { get; set; }
+
+    [Parameter]
+    public EventCallback<MovieType> OnMovieTypeChanged { get; set; }
+
+    private async Task SetMovieType(MovieType type)
+    {
+        if (CurrentMovieType != type)
+        {
+            CurrentMovieType = type;
+            await OnMovieTypeChanged.InvokeAsync(type);
+        }
+    }
+
+    private string GetButtonClass(MovieType type)
+    {
+        return CurrentMovieType == type ? "btn btn-secondary" : "btn btn-outline-secondary";
+    }
+}
+
+@code {
+    public enum MovieType
+    {
+        Popular,
+        TopRated
+    }
+}
