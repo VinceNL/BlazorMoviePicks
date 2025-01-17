@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="UI\SortableList.razor.js" />
+    <Content Include="Components\SortableList.razor.js" />
   </ItemGroup>
 
   <ItemGroup>

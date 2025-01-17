@@ -62,7 +62,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var module = await JS.InvokeAsync<IJSObjectReference>("import", "./UI/SortableList.razor.js");
+        var module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/SortableList.razor.js");
 
         if (module != null)
         {
